@@ -250,6 +250,7 @@ onMounted(() => {
 
       <!-- 小地图（点击按钮后显示） -->
       <MiniMap
+          style="bottom:46px"
           v-if="showMiniMap"
           class="custom-minimap"
           node-color="#888"
@@ -457,7 +458,8 @@ body {
   overflow: hidden !important;
   cursor: pointer !important;
   left: 0px;
-  bottom: 80px;
+
+  bottom: 46px;
 }
 
 .custom-minimap.vue-flow__minimap {
