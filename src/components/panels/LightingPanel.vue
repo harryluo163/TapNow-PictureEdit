@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { RotateCw, Zap, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Circle, ChevronUp } from 'lucide-vue-next'
+import LightingScene from '../multiAngles/LightingScene.vue'
+
+const props = defineProps<{
+  imageUrl?: string
+}>()
 
 const activeTab = ref('perspective')
 const brightness = ref(50)
@@ -54,10 +59,7 @@ const increaseRimIntensity = () => {
     <div class="panel-content">
       <!-- 左侧光源可视化区 -->
       <div class="light-visualizer">
-        <div class="light-circle">
-          <div class="light-source"></div>
-          <div class="light-cone"></div>
-        </div>
+        <LightingScene :image-url="props.imageUrl" />
         <div class="light-label">
           <span>主光源</span>
           <button class="reset-light-btn" @click="resetLight">
@@ -196,38 +198,7 @@ const increaseRimIntensity = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-}
-
-.light-circle {
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, #2a2a2a 0%, #1a1a1a 100%);
-  border-radius: 50%;
-  position: relative;
-  border: 2px solid #333;
-}
-
-.light-source {
-  position: absolute;
-  top: 20%;
-  left: 60%;
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-.light-cone {
-  position: absolute;
-  top: 20%;
-  left: 60%;
-  width: 2px;
-  height: 80px;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), transparent);
-  transform-origin: top center;
-  transform: translateX(-50%) rotate(-15deg);
+  gap: 12px;
 }
 
 .light-label {

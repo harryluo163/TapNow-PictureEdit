@@ -41,7 +41,47 @@ const handleHeaderClick = (event: MouseEvent) => {
     </div>
 
     <!-- 连接点 -->
-    <Handle type="target" position="left" class="w-3 h-3 bg-zinc-500 border-2 border-dark-100 hover:bg-white transition-colors" />
-    <Handle type="source" position="right" class="w-3 h-3 bg-zinc-500 border-2 border-dark-100 hover:bg-white transition-colors" />
+    <Handle
+      type="target"
+      id="preview-input"
+      position="left"
+      class="handle-point handle-target w-4 h-4 bg-zinc-600 border-2 border-zinc-400 hover:bg-white hover:border-white transition-all cursor-crosshair"
+    />
+    <Handle
+      type="source"
+      id="preview-output"
+      position="right"
+      class="handle-point handle-source w-4 h-4 bg-zinc-600 border-2 border-zinc-400 hover:bg-white hover:border-white transition-all cursor-crosshair"
+    />
   </div>
 </template>
+
+<style scoped>
+.node-card {
+  position: relative;
+}
+
+.handle-point {
+  pointer-events: auto !important;
+  transition: all 0.2s ease !important;
+  position: absolute !important;
+  z-index: 100 !important;
+}
+
+.handle-point:hover {
+  transform: scale(1.3) !important;
+  background: #4CAF50 !important;
+  border-color: #fff !important;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.6) !important;
+}
+
+.handle-target {
+  background: #FF9800 !important;
+  border-color: #FFB74D !important;
+}
+
+.handle-target:hover {
+  background: #4CAF50 !important;
+  border-color: #fff !important;
+}
+</style>

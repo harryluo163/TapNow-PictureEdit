@@ -4,7 +4,7 @@ import { Handle, Position } from '@vue-flow/core'
 import { Upload, Image as ImageIcon } from 'lucide-vue-next'
 import CommentTrigger from '../triggers/CommentTrigger.vue'
 import FloatingToolbar from '../bars/FloatingToolbar.vue'
-import MultiAnglePanel from '../panels/MultiAnglePanel.vue'
+import AngleEditor from '../multiAngles/AngleEditor.vue'
 import LightingPanel from '../panels/LightingPanel.vue'
 import { useNodeStore } from '../../stores/nodeStore'
 
@@ -49,19 +49,18 @@ const closePanel = () => {
       v-if="nodeStore.showToolbar"
       @tool-click="handleToolClick"
     />
-    
-    <!-- 多角度调整面板 -->
-    <div v-if="nodeStore.activePanel === 'multiangle'" class="panel-wrapper panel-bottom">
-      <MultiAnglePanel />
-      <button class="close-panel-btn" @click="closePanel">✕</button>
-    </div>
+
+
 
     <!-- 打光控制面板 -->
     <div v-if="nodeStore.activePanel === 'lighting'" class="panel-wrapper panel-bottom-left">
-      <LightingPanel />
+      <LightingPanel :image-url="data.imageUrl" />
       <button class="close-panel-btn" @click="closePanel">✕</button>
     </div>
-    
+    <!-- 多角度调整面板 -->
+    <div v-if="nodeStore.activePanel === 'multiangle'" class="panel-wrapper panel-bottom" @mousedown.stop>
+      <AngleEditor :image-url="data.imageUrl" @close="closePanel" />
+    </div>
     <!-- 内容区域 -->
     <div class="flex flex-col items-center justify-center relative min-h-300px">
       <!-- 顶部提示文字 -->
@@ -80,20 +79,21 @@ const closePanel = () => {
       </div>
     </div>
 
-    <!-- 输出连接点 - 悬停时显示 CommentTrigger -->
-    <div
-      class="custom-handle"
-      @mouseenter="isHandleHovered = true"
-      @mouseleave="isHandleHovered = false"
-    >
-      <div v-if="isHandleHovered" class="comment-trigger-popup">
-        <CommentTrigger @click="handleCommentTrigger" />
-      </div>
+    <!-- 输出连接点 -->
+    <div class="handle-wrapper">
       <Handle
         type="source"
         position="right"
-        class="w-3 h-3 bg-zinc-500 border-2 border-dark-100 hover:bg-white transition-colors"
+        id="image-output"
+        class="handle-point w-3 h-3 bg-zinc-500 border-2 border-dark-100 hover:bg-white transition-colors z-50"
+        @mouseenter="isHandleHovered = true"
+        @mouseleave="isHandleHovered = false"
+        @click="(e) => console.log('Handle clicked:', e)"
       />
+      <!-- 悬停时显示 CommentTrigger -->
+      <div v-if="isHandleHovered" class="comment-trigger-popup">
+        <CommentTrigger @click="handleCommentTrigger" />
+      </div>
     </div>
   </div>
 </template>
@@ -106,11 +106,6 @@ const closePanel = () => {
   overflow: visible;
   position: relative;
   cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.node-card:hover {
-  transform: scale(1.02);
 }
 
 .upload-hint {
@@ -132,11 +127,24 @@ const closePanel = () => {
   margin-bottom: 1px;
 }
 
-.custom-handle {
+.handle-wrapper {
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 50;
+  pointer-events: none !important;
+}
+
+.handle-point {
+  pointer-events: auto !important;
+  cursor: crosshair !important;
+  position: relative !important;
+}
+
+.handle-point:hover {
+  transform: scale(1.3);
+  background: #fff !important;
 }
 
 .comment-trigger-popup {
@@ -166,7 +174,7 @@ const closePanel = () => {
 }
 
 .panel-bottom {
-  bottom: -320px;
+  bottom: -330px;
   left: 50%;
   transform: translateX(-50%);
 }

@@ -20,15 +20,9 @@ const emit = defineEmits(['tool-click'])
 const activeTool = ref('')
 
 const tools = [
-  { id: 'redraw', label: '重绘', icon: Wand2 },
-  { id: 'erase', label: '擦除', icon: Eraser },
-  { id: 'enhance', label: '增强', icon: Sparkles },
-  { id: 'expand', label: '扩图', icon: Expand },
-  { id: 'cutout', label: '抠图', icon: Scissors },
   { id: 'multiangle', label: '多角度', icon: Box },
   { id: 'lighting', label: '打光', icon: Lightbulb },
-  { id: 'undo', label: '撤销', icon: Undo },
-  { id: 'download', label: '下载', icon: Download },
+
 
 ]
 
