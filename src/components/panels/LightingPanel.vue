@@ -37,20 +37,20 @@ const increaseRimIntensity = () => {
 </script>
 
 <template>
-  <div class="lighting-panel">
+  <div class="lighting-panel" @mousedown.stop @wheel.stop @touchstart.stop>
     <!-- 标签页 -->
-    <div class="tabs">
-      <button 
-        class="tab" 
+    <div class="tabs" @mousedown.stop @touchstart.stop style="display: none;">
+      <button
+        class="tab"
         :class="{ active: activeTab === 'perspective' }"
-        @click="activeTab = 'perspective'"
+        @click.stop="activeTab = 'perspective'"
       >
         透视
       </button>
-      <button 
-        class="tab" 
+      <button
+        class="tab"
         :class="{ active: activeTab === 'front' }"
-        @click="activeTab = 'front'"
+        @click.stop="activeTab = 'front'"
       >
         正面
       </button>
@@ -59,10 +59,31 @@ const increaseRimIntensity = () => {
     <div class="panel-content">
       <!-- 左侧光源可视化区 -->
       <div class="light-visualizer">
-        <LightingScene :image-url="props.imageUrl" />
-        <div class="light-label">
+        <!-- 浮动视图切换按钮 -->
+        <div class="view-toggle-float">
+          <button
+            class="view-toggle-btn"
+            :class="{ active: activeTab === 'perspective' }"
+            @click.stop="activeTab = 'perspective'"
+            title="透视视图"
+          >
+            透视
+          </button>
+          <button
+            class="view-toggle-btn"
+            :class="{ active: activeTab === 'front' }"
+            @click.stop="activeTab = 'front'"
+            title="正面视图"
+          >
+            正面
+          </button>
+        </div>
+        <div class="scene-wrapper">
+          <LightingScene :image-url="props.imageUrl" />
+        </div>
+        <div class="light-label" @mousedown.stop @touchstart.stop>
           <span>主光源</span>
-          <button class="reset-light-btn" @click="resetLight">
+          <button class="reset-light-btn" @click.stop="resetLight">
             <RotateCw size="12" />
             重置
           </button>
@@ -70,7 +91,7 @@ const increaseRimIntensity = () => {
       </div>
 
       <!-- 右侧参数区 -->
-      <div class="params-section">
+      <div class="params-section" @mousedown.stop @touchstart.stop>
         <!-- 全局 -->
         <div class="param-group">
           <h4 class="group-title">全局</h4>
@@ -79,12 +100,14 @@ const increaseRimIntensity = () => {
               <span class="param-label">亮度</span>
               <span class="param-value">{{ brightness }}%</span>
             </div>
-            <input 
-              type="range" 
-              v-model="brightness" 
-              min="0" 
-              max="100" 
+            <input
+              type="range"
+              v-model="brightness"
+              min="0"
+              max="100"
               class="slider"
+              @mousedown.stop
+              @touchstart.stop
             />
           </div>
           <div class="param-item">
@@ -92,12 +115,15 @@ const increaseRimIntensity = () => {
               <span class="param-label">色温</span>
               <span class="param-value">{{ colorTemp }} K</span>
             </div>
-            <input 
-              type="range" 
-              v-model="colorTemp" 
-              min="2700" 
-              max="6500" 
+            <input
+              type="range"
+              v-model="colorTemp"
+              min="2700"
+              max="6500"
               class="slider"
+              data-type="color-temp"
+              @mousedown.stop
+              @touchstart.stop
             />
           </div>
         </div>
@@ -106,14 +132,14 @@ const increaseRimIntensity = () => {
         <div class="param-group">
           <h4 class="group-title">主光源</h4>
           <div class="direction-grid">
-            <button 
-              v-for="dir in lightDirections" 
+            <button
+              v-for="dir in lightDirections"
               :key="dir.value"
               class="direction-btn"
               :class="{ active: lightDirection === dir.value }"
-              @click="lightDirection = dir.value"
+              @click.stop="lightDirection = dir.value"
             >
-              <component :is="dir.icon" size="16" />
+
               <span>{{ dir.label }}</span>
             </button>
           </div>
@@ -125,7 +151,7 @@ const increaseRimIntensity = () => {
           <div class="rim-light-item">
             <div class="param-header">
               <span class="param-label">开启</span>
-              <div class="toggle" :class="{ active: rimLight }" @click="rimLight = !rimLight">
+              <div class="toggle" :class="{ active: rimLight }" @click.stop="rimLight = !rimLight">
                 <div class="toggle-thumb"></div>
               </div>
             </div>
@@ -138,7 +164,7 @@ const increaseRimIntensity = () => {
                 <div class="intensity-bar">
                   <div class="intensity-fill" :style="{ width: rimIntensity + '%' }"></div>
                 </div>
-                <button class="increase-btn" @click="increaseRimIntensity">
+                <button class="increase-btn" @click.stop="increaseRimIntensity">
                   <ChevronUp size="14" />
                 </button>
               </div>
@@ -152,9 +178,10 @@ const increaseRimIntensity = () => {
 
 <style scoped>
 .lighting-panel {
+  width: 500px;
   background: #1e1e20;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 8px;
+  padding: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   border: 1px solid #2a2a2a;
 }
@@ -162,15 +189,15 @@ const increaseRimIntensity = () => {
 .tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .tab {
   flex: 1;
-  padding: 8px 16px;
+  padding: 6px 12px;
   background: #1a1a1a;
   border: 1px solid #333;
-  border-radius: 8px;
+  border-radius: 6px;
   color: #a0a0a0;
   font-size: 14px;
   font-weight: 500;
@@ -179,9 +206,9 @@ const increaseRimIntensity = () => {
 }
 
 .tab.active {
-  background: #2d2d30;
+  background: #4a4a4f;
   color: #fff;
-  border-color: #444;
+  border-color: #4a4a4f;
 }
 
 .tab:hover:not(.active) {
@@ -190,15 +217,55 @@ const increaseRimIntensity = () => {
 
 .panel-content {
   display: flex;
-  gap: 20px;
+  gap: 16px;
+  align-items: flex-start;
 }
 
 .light-visualizer {
-  flex: 0 0 140px;
+  flex: 0 0 55%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  min-height: 280px;
+  pointer-events: none;
+  position: relative;
+}
+
+.view-toggle-float {
+  position: absolute;
+  top: 3px;
+  left: 76px;
+  display: flex;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.view-toggle-btn {
+  padding: 3px 6px;
+  font-size: 11px;
+  background: rgba(26, 26, 26, 0.9);
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #a0a0a0;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+}
+
+.view-toggle-btn:hover {
+  background: rgba(42, 42, 42, 0.95);
+  color: #fff;
+}
+
+.view-toggle-btn.active {
+  background: rgba(74, 74, 79, 0.95);
+  color: #fff;
+  border-color: #555;
+}
+
+.scene-wrapper {
+  pointer-events: auto;
 }
 
 .light-label {
@@ -234,10 +301,10 @@ const increaseRimIntensity = () => {
 }
 
 .params-section {
-  flex: 1;
+  flex: 0 0 45%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .param-group {
@@ -248,9 +315,9 @@ const increaseRimIntensity = () => {
 
 .group-title {
   margin: 0;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
-  color: #e0e0e0;
+  color: #ffffff;
 }
 
 .param-item {
@@ -266,15 +333,15 @@ const increaseRimIntensity = () => {
 }
 
 .param-label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  color: #a0a0a0;
+  color: #b0b0b3;
 }
 
 .param-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
 }
 
 .slider {
@@ -304,6 +371,11 @@ const increaseRimIntensity = () => {
   transform: scale(1.1);
 }
 
+/* 色温滑块渐变背景 */
+.slider[data-type="color-temp"] {
+  background: linear-gradient(to right, #ff9e4d, #87ceeb);
+}
+
 .direction-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -319,9 +391,9 @@ const increaseRimIntensity = () => {
   padding: 8px;
   background: #1a1a1a;
   border: 1px solid #333;
-  border-radius: 8px;
+  border-radius: 6px;
   color: #a0a0a0;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -331,9 +403,10 @@ const increaseRimIntensity = () => {
 }
 
 .direction-btn.active {
-  background: #2d2d30;
+  background: #3a3a3c;
   color: #fff;
-  border-color: #4a90e2;
+  border-color: #3a3a3c;
+  box-shadow: inset 0 0 0 1px #4a4a4f;
 }
 
 .toggle {
@@ -366,6 +439,12 @@ const increaseRimIntensity = () => {
   background: #fff;
 }
 
+.rim-light-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .intensity-control {
   display: flex;
   align-items: center;
@@ -393,16 +472,16 @@ const increaseRimIntensity = () => {
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: #1a1a1a;
+  background: #2d2d2f;
   border: 1px solid #333;
-  border-radius: 6px;
+  border-radius: 4px;
   color: #a0a0a0;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .increase-btn:hover {
-  background: #2a2a2a;
+  background: #3a3a3c;
   color: #fff;
 }
 </style>

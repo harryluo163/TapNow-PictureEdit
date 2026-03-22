@@ -180,8 +180,8 @@ const closePanel = () => {
 }
 
 .panel-bottom-left {
-  bottom: -320px;
-  left: 0;
+  bottom: -435px;
+  left: -148px;
 }
 
 .close-panel-btn {
