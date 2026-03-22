@@ -23,6 +23,28 @@ const lightDirections = [
   { value: 'back', label: '后方', icon: Circle },
 ]
 
+// 监听亮度变化，四舍五入到最近的三个固定值
+watch(brightness, (newVal) => {
+  const options = [10, 50, 100]
+  const closest = options.reduce((prev, curr) => {
+    return Math.abs(curr - newVal) < Math.abs(prev - newVal) ? curr : prev
+  })
+  if (newVal !== closest) {
+    brightness.value = closest
+  }
+})
+
+// 监听色温变化，吸附到固定值
+watch(colorTemp, (newVal) => {
+  const options = [2000, 3000, 4000, 5600, 7000, 8000]
+  const closest = options.reduce((prev, curr) => {
+    return Math.abs(curr - newVal) < Math.abs(prev - newVal) ? curr : prev
+  })
+  if (newVal !== closest) {
+    colorTemp.value = closest
+  }
+})
+
 const resetLight = () => {
   brightness.value = 50
   colorTemp.value = 5600
@@ -79,7 +101,12 @@ const increaseRimIntensity = () => {
           </button>
         </div>
         <div class="scene-wrapper">
-          <LightingScene :image-url="props.imageUrl" />
+          <LightingScene
+            :image-url="props.imageUrl"
+            :brightness="brightness"
+            :color-temp="colorTemp"
+            :light-direction="lightDirection"
+          />
         </div>
         <div class="light-label" @mousedown.stop @touchstart.stop>
           <span>主光源</span>
@@ -103,8 +130,9 @@ const increaseRimIntensity = () => {
             <input
               type="range"
               v-model="brightness"
-              min="0"
+              min="10"
               max="100"
+              step="1"
               class="slider"
               @mousedown.stop
               @touchstart.stop
@@ -118,8 +146,8 @@ const increaseRimIntensity = () => {
             <input
               type="range"
               v-model="colorTemp"
-              min="2700"
-              max="6500"
+              min="2000"
+              max="8000"
               class="slider"
               data-type="color-temp"
               @mousedown.stop
@@ -130,7 +158,7 @@ const increaseRimIntensity = () => {
 
         <!-- 主光源 -->
         <div class="param-group">
-          <h4 class="group-title">主光源</h4>
+          <h1 class="group-title">主光源</h1>
           <div class="direction-grid">
             <button
               v-for="dir in lightDirections"
@@ -147,25 +175,40 @@ const increaseRimIntensity = () => {
 
         <!-- 轮廓光 -->
         <div class="param-group">
-          <h4 class="group-title">轮廓光</h4>
+
           <div class="rim-light-item">
             <div class="param-header">
-              <span class="param-label">开启</span>
+              <h4 class="group-title">轮廓光</h4>
               <div class="toggle" :class="{ active: rimLight }" @click.stop="rimLight = !rimLight">
                 <div class="toggle-thumb"></div>
               </div>
             </div>
-            <div class="param-item">
-              <div class="param-header">
-                <span class="param-label">强度</span>
-                <span class="param-value">{{ rimIntensity }}</span>
-              </div>
-              <div class="intensity-control">
-                <div class="intensity-bar">
-                  <div class="intensity-fill" :style="{ width: rimIntensity + '%' }"></div>
+            <div class="price-button-wrapper mt-4 self-end">
+              <div
+                  class="price-button flex items-center gap-1 rounded-full p-1 border border-white/10 justify-between"
+                  @click="handleApply"
+                  style="width: 69px; backdrop-filter: blur(10px); background: radial-gradient(94.74% 157.5% at 50% 21.25%, rgb(26, 26, 26) 0%, rgb(101, 103, 102) 100%);"
+              >
+                <div class="flex items-center text-sm text-popover-foreground font-medium box-border pl-1">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke: rgb(204, 204, 204);">
+                    <path d="M11.2077 11.0832C13.7219 11.0832 15.7601 9.04507 15.7601 6.53088C15.7601 4.01668 13.7219 1.97852 11.2077 1.97852C8.6935 1.97852 6.65533 4.01668 6.65533 6.53088C6.65533 9.04507 8.6935 11.0832 11.2077 11.0832Z" stroke-width="2"></path>
+                    <path d="M2.05883 7.07063C2.40649 5.06634 4.30083 3.70985 6.31403 4.03225C8.31238 4.35169 9.68225 6.2074 9.41481 8.20129C9.41481 8.34911 9.51357 8.81255 9.57973 9.03629C9.77436 9.69448 10.1844 10.6335 11.015 11.721C12.2615 13.3554 11.948 15.691 10.3152 16.9375C8.68085 18.1841 6.34524 17.8721 5.09869 16.2378C2.41541 12.7239 1.71413 9.22201 2.0514 7.11817L2.05883 7.07063Z" stroke-width="2"></path>
+                    <path d="M8.52786 8.98262L7.26662 12.7829C6.82516 14.1131 7.54561 15.5493 8.87578 15.9907L12.6761 17.252C14.0062 17.6934 15.4424 16.973 15.8839 15.6428L17.1451 11.8425C17.5866 10.5124 16.8662 9.07616 15.536 8.6347L11.7357 7.37346C10.4055 6.932 8.96932 7.65244 8.52786 8.98262Z" stroke-width="2"></path>
+                  </svg>
+                  <span class="relative inline-flex min-w-6 justify-center tabular-nums text-[12px]">
+                      <span class="inline-flex w-full justify-center whitespace-nowrap tap-price-change">10</span>
+                    </span>
                 </div>
-                <button class="increase-btn" @click.stop="increaseRimIntensity">
-                  <ChevronUp size="14" />
+                <button
+                    type="button"
+                    class="aspect-square w-6.5 h-6.5 rounded-full cursor-pointer flex items-center justify-center bg-white text-black hover:bg-white/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                    aria-label="Generate"
+                    data-testid="canvas-node-generate-btn"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up" aria-hidden="true">
+                    <path d="m5 12 7-7 7 7"></path>
+                    <path d="M12 19V5"></path>
+                  </svg>
                 </button>
               </div>
             </div>
@@ -181,7 +224,7 @@ const increaseRimIntensity = () => {
   width: 500px;
   background: #1e1e20;
   border-radius: 8px;
-  padding: 16px;
+  padding: 6px 10px 0px 0px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   border: 1px solid #2a2a2a;
 }
@@ -217,7 +260,7 @@ const increaseRimIntensity = () => {
 
 .panel-content {
   display: flex;
-  gap: 16px;
+  gap: 2px;
   align-items: flex-start;
 }
 
@@ -226,7 +269,7 @@ const increaseRimIntensity = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+
   min-height: 280px;
   pointer-events: none;
   position: relative;
@@ -235,14 +278,14 @@ const increaseRimIntensity = () => {
 .view-toggle-float {
   position: absolute;
   top: 3px;
-  left: 76px;
+  left: 107px;
   display: flex;
   pointer-events: auto;
   z-index: 10;
 }
 
 .view-toggle-btn {
-  padding: 3px 6px;
+  padding: 2px 3px;
   font-size: 11px;
   background: rgba(26, 26, 26, 0.9);
   border: 1px solid #444;
@@ -310,7 +353,7 @@ const increaseRimIntensity = () => {
 .param-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 2px;
 }
 
 .group-title {
@@ -323,7 +366,7 @@ const increaseRimIntensity = () => {
 .param-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
 }
 
 .param-header {
@@ -379,7 +422,7 @@ const increaseRimIntensity = () => {
 .direction-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 2px;
 }
 
 .direction-btn {
@@ -387,8 +430,8 @@ const increaseRimIntensity = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 8px;
+  gap: 1px;
+  padding: 1px;
   background: #1a1a1a;
   border: 1px solid #333;
   border-radius: 6px;
@@ -442,46 +485,7 @@ const increaseRimIntensity = () => {
 .rim-light-item {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 2px;
 }
 
-.intensity-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.intensity-bar {
-  flex: 1;
-  height: 8px;
-  background: #3a3a3c;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.intensity-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #4a90e2, #64b5f6);
-  border-radius: 4px;
-  transition: width 0.3s;
-}
-
-.increase-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  background: #2d2d2f;
-  border: 1px solid #333;
-  border-radius: 4px;
-  color: #a0a0a0;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.increase-btn:hover {
-  background: #3a3a3c;
-  color: #fff;
-}
 </style>

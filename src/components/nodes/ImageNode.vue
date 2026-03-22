@@ -22,7 +22,7 @@ const isHandleHovered = ref(false)
 
 const handleImageClick = (event: MouseEvent) => {
   event.stopPropagation()
-  nodeStore.toggleToolbar()
+  nodeStore.setShowToolbar(true)
 }
 
 const handleCommentTrigger = () => {
@@ -170,18 +170,19 @@ const closePanel = () => {
 .panel-wrapper {
   position: absolute;
   z-index: 100;
-  animation: slideUp 0.3s ease-out;
 }
 
 .panel-bottom {
   bottom: -330px;
   left: 50%;
   transform: translateX(-50%);
+  animation: slideUp 0.3s ease-out;
 }
 
 .panel-bottom-left {
-  bottom: -435px;
+  bottom: -280px;
   left: -148px;
+  animation: slideUpNoX 0.3s ease-out;
 }
 
 .close-panel-btn {
@@ -214,6 +215,17 @@ const closePanel = () => {
   to {
     opacity: 1;
     transform: translate(-50%, 0);
+  }
+}
+
+@keyframes slideUpNoX {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
